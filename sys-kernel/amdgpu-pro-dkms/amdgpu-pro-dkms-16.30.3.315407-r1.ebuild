@@ -5,11 +5,11 @@
 EAPI=5
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-inherit eutils linux-info multilib-build unpacker
+inherit eutils linux-info multilib-build unpacker versionator
 
 DESCRIPTION="AMD GPU-Pro kernel module for Radeon Evergreen (HD5000 Series) and newer chipsets"
 HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Beta-Driver-for-Vulkan-Release-Notes.aspx"
-BUILD_VER=16.30.3-315407
+BUILD_VER=$(replace_version_separator 3 '-')
 SRC_URI="https://www2.ati.com/drivers/beta/amdgpu-pro_${BUILD_VER}.tar.xz"
 
 RESTRICT="fetch strip"
