@@ -6,14 +6,11 @@ EAPI=6
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 #inherit eutils linux-info multilib-build unpacker
-inherit multilib-build unpacker
+inherit multilib-build unpacker versionator
 
 DESCRIPTION="AMD precompiled drivers for Radeon Evergreen (HD5000 Series) and newer chipsets"
 HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Beta-Driver-for-Vulkan-Release-Notes.aspx"
-PKG_VER=16.30.3
-PKG_REV=315407
-PKG_VER_STRING=${PKG_VER}-${PKG_REV}
-BUILD_VER=${PKG_VER}.${PKG_REV}
+PKG_VER_STRING=$(replace_version_separator 3 '-')
 SRC_URI="https://www2.ati.com/drivers/beta/amdgpu-pro_${PKG_VER_STRING}.tar.xz"
 
 RESTRICT="fetch strip"
@@ -41,7 +38,7 @@ RDEPEND="
 "
 DEPEND="
 	=x11-libs/libdrm-2.4.66-r1
-	=sys-kernel/amdgpu-pro-dkms-${BUILD_VER}-r1
+	=sys-kernel/amdgpu-pro-dkms-${PV}-r1
 "
 
 S="${WORKDIR}"
