@@ -134,11 +134,11 @@ src_unpack() {
 
 	if use gles2 ; then
 		unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro_${PKG_VER_STRING}_amd64.deb"
-		unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro-dev_${PKG_VER_STRING}_amd64.deb"
+		# unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro-dev_${PKG_VER_STRING}_amd64.deb"
 
 		if use abi_x86_32 ; then
 			unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro_${PKG_VER_STRING}_i386.deb"
-			unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro-dev_${PKG_VER_STRING}_i386.deb"
+			# unpack_deb "./amdgpu-pro-${PKG_VER_STRING}/libgles2-amdgpu-pro-dev_${PKG_VER_STRING}_i386.deb"
 		fi
 	fi
 
