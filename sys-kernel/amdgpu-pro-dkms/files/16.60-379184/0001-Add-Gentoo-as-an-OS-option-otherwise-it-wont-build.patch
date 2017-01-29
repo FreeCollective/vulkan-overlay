@@ -1,0 +1,43 @@
+From f69e425e8ae21c0e8ed5f88169cac3d1388a1774 Mon Sep 17 00:00:00 2001
+From: "Luke A. Guest" <laguest@archeia.com>
+Date: Sun, 29 Jan 2017 10:16:57 +0000
+Subject: [PATCH 1/4] Add Gentoo as an OS option otherwise it wont build
+
+---
+ Makefile          | 4 ++++
+ amd/dkms/Makefile | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index d7da57d..4c619d6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -24,6 +24,10 @@ else ifeq ("sled",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_SLE
+ else ifeq ("sles",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_SLE
++else ifeq ("gentoo",$(OS_NAME))
++ccflags-y += -DOS_NAME_GENTOO
++# We don't have a version inside /etc/os-release.
++OS_VERSION = "0.0"
+ else
+ subdir-ccflags-y += -DOS_NAME_UNKNOWN
+ endif
+diff --git a/amd/dkms/Makefile b/amd/dkms/Makefile
+index d7da57d..4c619d6 100644
+--- a/amd/dkms/Makefile
++++ b/amd/dkms/Makefile
+@@ -24,6 +24,10 @@ else ifeq ("sled",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_SLE
+ else ifeq ("sles",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_SLE
++else ifeq ("gentoo",$(OS_NAME))
++ccflags-y += -DOS_NAME_GENTOO
++# We don't have a version inside /etc/os-release.
++OS_VERSION = "0.0"
+ else
+ subdir-ccflags-y += -DOS_NAME_UNKNOWN
+ endif
+-- 
+2.7.3
+
