@@ -1,7 +1,7 @@
 From d1066a7bd18a96195cd6ab419808e00c8fde5898 Mon Sep 17 00:00:00 2001
 From: "Luke A. Guest" <laguest@archeia.com>
 Date: Sun, 29 Jan 2017 11:04:17 +0000
-Subject: [PATCH 3/4] Move max_tmds_clock to display_info.max_tmds_clock.
+Subject: [PATCH 03/14] Move max_tmds_clock to display_info.max_tmds_clock.
 
 ---
  amd/amdgpu/amdgpu_connectors.c | 9 ++++++++-

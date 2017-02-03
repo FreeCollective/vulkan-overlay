@@ -54,6 +54,16 @@ src_prepare() {
 		epatch "${FILESDIR}"/${BUILD_VER}/0002-Fix-paging-changes-between-kernel-versions.patch
 		epatch "${FILESDIR}"/${BUILD_VER}/0003-Move-max_tmds_clock-to-display_info.max_tmds_clock.patch
 		epatch "${FILESDIR}"/${BUILD_VER}/0004-Fix-kernel-module-installation-location-using-dkms.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0005-Change-acpi_get_table_with_size-acpi_get_table-for-k.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0006-Change-drm_fb_get_bpp_depth-drm_format_plane_cpp-for.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0007-Add-cast-to-size_t-in-min-call-for-kernel-v4.10.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0008-Change-second-parameter-passed-to-drm_vma_node_verif.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0009-Change-vmf-virtual_address-to-vmf-address-for-kernel.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0010-Add-format_name-parameter-to-drm_get_format_name-for.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0011-Change-drm_vblank_-on-off-to-drm_crtc_vblank_-on-off.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0012-Change-drm_atomic_state_free-drm_atomic_state_put-fo.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0013-Change-context-format-parameter-from-d-to-llu-in-seq.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0014-Change-fence-types-to-dma_fence-for-kernel-v4.10.patch
 	popd > /dev/null
 
 	mkdir -p ./inst/usr/src

@@ -1,0 +1,58 @@
+From b1d8912e7f4c07da468712632e42b97d6fdaff3f Mon Sep 17 00:00:00 2001
+From: "Luke A. Guest" <laguest@archeia.com>
+Date: Fri, 3 Feb 2017 16:07:56 +0000
+Subject: [PATCH 12/14] Change drm_atomic_state_free -> drm_atomic_state_put,
+ for kernel v4.10.
+
+---
+ amd/display/amdgpu_dm/amdgpu_dm.c       | 4 ++++
+ amd/display/amdgpu_dm/amdgpu_dm_types.c | 8 ++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/amd/display/amdgpu_dm/amdgpu_dm.c b/amd/display/amdgpu_dm/amdgpu_dm.c
+index 3dcb619..b1a7dce 100644
+--- a/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -612,7 +612,11 @@ static int dm_display_resume(struct drm_device *ddev)
+ 
+ err:
+ 	DRM_ERROR("Restoring old state failed with %i\n", ret);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	drm_atomic_state_put(state);
++#else
+ 	drm_atomic_state_free(state);
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 
+ 	return ret;
+ }
+diff --git a/amd/display/amdgpu_dm/amdgpu_dm_types.c b/amd/display/amdgpu_dm/amdgpu_dm_types.c
+index be7aafb..0064626 100644
+--- a/amd/display/amdgpu_dm/amdgpu_dm_types.c
++++ b/amd/display/amdgpu_dm/amdgpu_dm_types.c
+@@ -1120,7 +1120,11 @@ fail:
+ 	if (ret == -EDEADLK)
+ 		goto backoff;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	drm_atomic_state_put(state);
++#else
+ 	drm_atomic_state_free(state);
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 
+ 	return ret;
+ backoff:
+@@ -2813,7 +2817,11 @@ int amdgpu_dm_atomic_commit(
+ 	if (!async)
+ 		drm_atomic_helper_cleanup_planes(dev, state);
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	drm_atomic_state_put(state);
++#else
+ 	drm_atomic_state_free(state);
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 
+ 	return 0;
+ }
+-- 
+2.7.3
+

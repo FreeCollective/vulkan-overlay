@@ -1,0 +1,41 @@
+From 85b1a033413b55e1857d29d8c64546c038187381 Mon Sep 17 00:00:00 2001
+From: "Luke A. Guest" <laguest@archeia.com>
+Date: Fri, 3 Feb 2017 15:36:36 +0000
+Subject: [PATCH 06/14] Change drm_fb_get_bpp_depth -> drm_format_plane_cpp for
+ kernel v4.10.
+
+---
+ amd/amdgpu/amdgpu_fb.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/amd/amdgpu/amdgpu_fb.c b/amd/amdgpu/amdgpu_fb.c
+index 85558a7..7c2d3a2 100644
+--- a/amd/amdgpu/amdgpu_fb.c
++++ b/amd/amdgpu/amdgpu_fb.c
+@@ -137,6 +137,15 @@ static int amdgpufb_create_pinned_object(struct amdgpu_fbdev *rfbdev,
+ 	int ret;
+ 	int aligned_size, size;
+ 	int height = mode_cmd->height;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	u32 cpp;
++
++	cpp = drm_format_plane_cpp(mode_cmd->pixel_format, 0);
++
++	/* need to align pitch with crtc limits */
++        mode_cmd->pitches[0] = amdgpu_align_pitch(adev, mode_cmd->width, cpp,
++                                                  fb_tiled);
++#else
+ 	u32 bpp, depth;
+ 
+ 	drm_fb_get_bpp_depth(mode_cmd->pixel_format, &depth, &bpp);
+@@ -144,6 +153,7 @@ static int amdgpufb_create_pinned_object(struct amdgpu_fbdev *rfbdev,
+ 	/* need to align pitch with crtc limits */
+ 	mode_cmd->pitches[0] = amdgpu_align_pitch(adev, mode_cmd->width, bpp,
+ 						  fb_tiled) * ((bpp + 1) / 8);
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 
+ 	height = ALIGN(mode_cmd->height, 8);
+ 	size = mode_cmd->pitches[0] * height;
+-- 
+2.7.3
+

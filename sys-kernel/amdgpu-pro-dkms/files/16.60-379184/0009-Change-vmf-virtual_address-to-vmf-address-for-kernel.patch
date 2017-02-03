@@ -1,0 +1,29 @@
+From 91e3ac366cb5d7a4617816b57f3a356335de2825 Mon Sep 17 00:00:00 2001
+From: "Luke A. Guest" <laguest@archeia.com>
+Date: Fri, 3 Feb 2017 15:59:30 +0000
+Subject: [PATCH 09/14] Change vmf->virtual_address to vmf->address, for kernel
+ v4.10.
+
+---
+ ttm/ttm_bo_vm.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/ttm/ttm_bo_vm.c b/ttm/ttm_bo_vm.c
+index a7d769f..99a15ce 100644
+--- a/ttm/ttm_bo_vm.c
++++ b/ttm/ttm_bo_vm.c
+@@ -106,7 +106,11 @@ static int ttm_bo_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
+ 	struct page *page;
+ 	int ret;
+ 	int i;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	unsigned long address = (unsigned long)vmf->address;
++#else
+ 	unsigned long address = (unsigned long)vmf->virtual_address;
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 	int retval = VM_FAULT_NOPAGE;
+ 	struct ttm_mem_type_manager *man =
+ 		&bdev->man[bo->mem.mem_type];
+-- 
+2.7.3
+

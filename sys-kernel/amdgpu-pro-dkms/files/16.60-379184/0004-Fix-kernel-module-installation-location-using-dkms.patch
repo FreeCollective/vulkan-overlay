@@ -1,7 +1,7 @@
 From 7beffea86bb20ac9c303f8507fe21def1d035e3b Mon Sep 17 00:00:00 2001
 From: "Luke A. Guest" <laguest@archeia.com>
 Date: Sun, 29 Jan 2017 11:20:32 +0000
-Subject: [PATCH 4/4] Fix kernel module installation location using dkms
+Subject: [PATCH 04/14] Fix kernel module installation location using dkms
 
 ---
  dkms.conf | 6 +++---

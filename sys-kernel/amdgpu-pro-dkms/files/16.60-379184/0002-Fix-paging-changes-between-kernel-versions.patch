@@ -1,7 +1,7 @@
 From c0a1c8d36259d33a9b4438a445b513b342e140f5 Mon Sep 17 00:00:00 2001
 From: "Luke A. Guest" <laguest@archeia.com>
 Date: Sun, 29 Jan 2017 10:39:34 +0000
-Subject: [PATCH 2/4] Fix paging changes between kernel versions
+Subject: [PATCH 02/14] Fix paging changes between kernel versions
 
 ---
  include/kcl/kcl_mm.h | 8 +++++++-

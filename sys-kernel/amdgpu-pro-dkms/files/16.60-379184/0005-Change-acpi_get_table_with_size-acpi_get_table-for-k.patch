@@ -1,0 +1,32 @@
+From 3c1d60b1068df514abb5a53936c01933d021fb17 Mon Sep 17 00:00:00 2001
+From: "Luke A. Guest" <laguest@archeia.com>
+Date: Fri, 3 Feb 2017 15:31:57 +0000
+Subject: [PATCH 05/14] Change acpi_get_table_with_size -> acpi_get_table for
+ kernel v4.10.
+
+---
+ amd/amdgpu/amdgpu_bios.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/amd/amdgpu/amdgpu_bios.c b/amd/amdgpu/amdgpu_bios.c
+index 4f973a9..b963c81 100644
+--- a/amd/amdgpu/amdgpu_bios.c
++++ b/amd/amdgpu/amdgpu_bios.c
+@@ -305,8 +305,14 @@ static bool amdgpu_acpi_vfct_bios(struct amdgpu_device *adev)
+ 	GOP_VBIOS_CONTENT *vbios;
+ 	VFCT_IMAGE_HEADER *vhdr;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++	if (!ACPI_SUCCESS(acpi_get_table("VFCT", 1, &hdr)))
++		return false;
++	tbl_size = hdr->length;
++#else
+ 	if (!ACPI_SUCCESS(acpi_get_table_with_size("VFCT", 1, &hdr, &tbl_size)))
+ 		return false;
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0) */
+ 	if (tbl_size < sizeof(UEFI_ACPI_VFCT)) {
+ 		DRM_ERROR("ACPI VFCT table present but broken (too short #1)\n");
+ 		goto out_unmap;
+-- 
+2.7.3
+
