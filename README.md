@@ -51,12 +51,22 @@ In your `/etc/portage/make.conf` file, set `VIDEO_CARDS="amdgpu"`, radeon and ra
 package. If you want to complain about this, aim your complaints at AMD and tell them to release the source or patches
 to libdrm so I can just provide a custom source ebuild.
 
+### sys-kernel/dkms
+
+This is Dell's DKMS program for managing dkms modules.
+
+* Build 2.3
 
 ### sys-kernel/amdgpu-pro-dkms
 
 This is the kernel module source for the hybrid stack, this has extra ioctl's that are required for the rest of the
 stack.
 
+* Build 16.60-379184 teested on:
+  - 4.8.14 (works)
+  - 4.8.17 (works)
+  - 4.9.6-gentoo (crashes)
+  - 4.10-rc5 (black console on boot)
 * Build 16.30.3-315407 tested on:
   - 4.7.4-gentoo
   - 4.8.0-rc1
