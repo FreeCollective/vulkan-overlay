@@ -8,25 +8,25 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 #inherit eutils linux-info multilib-build unpacker
 inherit multilib-build unpacker versionator
 
-DESCRIPTION="AMD precompiled drivers for Radeon Evergreen (HD5000 Series) and newer chipsets"
-HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Driver-for-Linux-Release-Notes.aspx"
+DESCRIPTION="AMDGPU-PRO proprietary driver for Radeon videocars"
+HOMEPAGE="https://www.amd.com/en/support/kb/release-notes/rn-amdgpu-unified-linux"
 BUILD_VER=$(replace_version_separator 2 '-')
 BUILD_MINOR_REV=$(get_version_component_range 3)
-ARC_NAME="amdgpu-pro-${BUILD_VER}.tar.xz"
-SRC_URI="https://www2.ati.com/drivers/linux/ubuntu/${ARC_NAME}"
+ARC_NAME="amdgpu-pro-${BUILD_VER}-ubuntu-18.04.tar.xz"
+SRC_URI="https://drivers.amd.com/drivers/linux//${BUILD_VER}/${ARC_NAME}"
 
 RESTRICT="fetch strip"
 
 # The binary blobs include binaries for other open sourced packages, we don't want to include those parts, if they are
 # selected, they should come from portage.
-IUSE="gles2 opencl +opengl vdpau +vulkan openmax"
+IUSE="gles1 gles2 opencl +opengl vdpau +vulkan openmax"
 
 LICENSE="AMD GPL-2 QPL-1.0"
 KEYWORDS="~amd64"
 SLOT="1"
 
 RDEPEND="
-	>=app-eselect/eselect-opengl-1.0.7
+	>=app-eselect/eselect-opengl-1.3.0
 	app-eselect/eselect-opencl
 	x11-libs/libX11[${MULTILIB_USEDEP}]
 	x11-libs/libXext[${MULTILIB_USEDEP}]
@@ -39,7 +39,7 @@ RDEPEND="
 	x11-proto/xineramaproto
 "
 DEPEND="
-	=x11-libs/libdrm-2.4.70-r1
+	=x11-libs/libdrm-2.4.98
 	=sys-kernel/amdgpu-pro-dkms-${PV}
 "
 
@@ -69,7 +69,7 @@ src_unpack() {
 		unpack_deb "./amdgpu-pro-${BUILD_VER}/clinfo-amdgpu-pro_${BUILD_VER}_amd64.deb"
 
 		# Install the actual shared OpenCL lib - this uses the icd files to find the correct lib.
-		unpack_deb "./amdgpu-pro-${BUILD_VER}/libopencl1-amdgpu-pro_${BUILD_VER}_amd64.deb"
+		unpack_deb "./amdgpu-pro-${BUILD_VER}/libopencl1-amdgpu-pro_${BUILD_VER}_${ARCH}.deb"
 
 		# Install the Installable Client Driver (ICD).
 		unpack_deb "./amdgpu-pro-${BUILD_VER}/opencl-amdgpu-pro-icd_${BUILD_VER}_amd64.deb"
@@ -118,6 +118,7 @@ src_unpack() {
 		fi
 	fi
 
+
 	if use gles2 ; then
 		unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles2-amdgpu-pro_${BUILD_VER}_amd64.deb"
 
@@ -125,6 +126,14 @@ src_unpack() {
 			unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles2-amdgpu-pro_${BUILD_VER}_i386.deb"
 		fi
 	fi
+
+        if use gles1 ; then
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles1-amdgpu-pro_${BUILD_VER}_amd64.deb"
+
+                if use abi_x86_32 ; then
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles1-amdgpu-pro_${BUILD_VER}_i386.deb"
+                fi
+        fi
 
 	# Install the EGL libs
 	unpack_deb "./amdgpu-pro-${BUILD_VER}/libegl1-amdgpu-pro_${BUILD_VER}_amd64.deb"
@@ -135,27 +144,58 @@ src_unpack() {
 
 	# Install the VDPAU libs
 	if use vdpau ; then
-		unpack_deb "./amdgpu-pro-${BUILD_VER}/libvdpau-amdgpu-pro_12.0.3-${BUILD_MINOR_REV}_amd64.deb"
+		unpack_deb "./amdgpu-pro-${BUILD_VER}/libvdpau-amdgpu-pro_19.2.2-${BUILD_MINOR_REV}_amd64.deb"
 
 		if use abi_x86_32 ; then
-			unpack_deb "./amdgpu-pro-${BUILD_VER}/libvdpau-amdgpu-pro_12.0.3-${BUILD_MINOR_REV}_i386.deb"
+			unpack_deb "./amdgpu-pro-${BUILD_VER}/libvdpau-amdgpu-pro_19.2.2-${BUILD_MINOR_REV}_i386.deb"
 		fi
 	fi
+
+        if use gles2 ; then
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles2-amdgpu-pro_${BUILD_VER}_amd64.deb"
+
+                if use abi_x86_32 ; then
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libgles2-amdgpu-pro_${BUILD_VER}_i386.deb"
+                fi
+        fi
+
+	# Install the Wayland libs (untested)
+	if use wayland ; then
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-client0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-cursor0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-server0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-egl1_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                unpack_deb "./amdgpu-pro-${BUILD_VER}/wayland-protocols-amdgpu_1.18-${BUILD_MINOR_REV}_amd64.deb"
+                if use abi_x86_32 ; then
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-client0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-cursor0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-server0_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/libwayland-amdgpu-egl1_1.15.0-${BUILD_MINOR_REV}_amd64.deb"
+                        unpack_deb "./amdgpu-pro-${BUILD_VER}/wayland-protocols-amdgpu_1.18-${BUILD_MINOR_REV}_amr64.deb"
+                fi
+
+        fi
 
 	# Install the Open MAX libs
 	if use openmax ; then
 		unpack_deb "./amdgpu-pro-${BUILD_VER}/gst-omx-amdgpu-pro_1.0.0.1-${BUILD_MINOR_REV}_amd64.deb"
-		unpack_deb "./amdgpu-pro-${BUILD_VER}/mesa-amdgpu-pro-omx-drivers_12.0.3-${BUILD_MINOR_REV}_amd64.deb"
+		unpack_deb "./amdgpu-pro-${BUILD_VER}/mesa-amdgpu-pro-omx-drivers_19.2.2-${BUILD_MINOR_REV}_amd64.deb"
 
 		if use abi_x86_32 ; then
 			unpack_deb "./amdgpu-pro-${BUILD_VER}/gst-omx-amdgpu-pro_1.0.0.1-${BUILD_MINOR_REV}_i386.deb"
-			unpack_deb "./amdgpu-pro-${BUILD_VER}/mesa-amdgpu-pro-omx-drivers_12.0.3-${BUILD_MINOR_REV}_i386.deb"
+			unpack_deb "./amdgpu-pro-${BUILD_VER}/mesa-amdgpu-pro-omx-drivers_19.2.2-${BUILD_MINOR_REV}_i386.deb"
 		fi
 	fi
 
-	# Install the X modules. No x86 version of this lib for some reason.
-	unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-video-amdgpu-pro_1.2.99-${BUILD_MINOR_REV}_amd64.deb"
-	unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-video-modesetting-amdgpu-pro_1.18.3-${BUILD_MINOR_REV}_amd64.deb"
+	# Install the X modules.
+	unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-video-amdgpu-pro_19.0.1-${BUILD_MINOR_REV}_amd64.deb"
+	unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-hwe-amdgpu-pro_19.0.1-${BUILD_MINOR_REV}_amd64.deb"
+		if use abi_x86_32 ; then
+					unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-video-amdgpu-video-amdgpu_19.0.1-${BUILD_MINOR_REV}_i386.deb"
+					unpack_deb "./amdgpu-pro-${BUILD_VER}/xserver-xorg-hwe-amdgpu-video-amdgpu_19.0.1-${BUILD_MINOR_REV}_i386.deb"
+                fi
+
+
 }
 
 src_prepare() {
@@ -167,7 +207,7 @@ src_prepare() {
 	# popd > /dev/null
 	cat << EOF > "${T}/01-amdgpu-pro.conf" || die
 /usr/$(get_libdir)/gbm
-/usr/lib32/gbm
+/usr/lib/gbm
 EOF
 
 	cat << EOF > "${T}/10-device.conf" || die
@@ -215,7 +255,7 @@ EOF
 {
    "file_format_version": "1.0.0",
 	   "ICD": {
-		   "library_path": "/usr/lib32/vulkan/vendors/amdgpu-pro/amdvlk32.so",
+		   "library_path": "/usr/lib/vulkan/vendors/amdgpu-pro/amdvlk32.so",
 		   "abi_versions": "0.9.0"
 	   }
 }
@@ -259,11 +299,11 @@ src_install() {
 		if use abi_x86_32 ; then
 			insinto /etc/OpenCL/vendors
 			doins etc/OpenCL/vendors/amdocl32.icd
-			exeinto /usr/lib32/OpenCL/vendors/amdgpu-pro
+			exeinto /usr/lib/OpenCL/vendors/amdgpu-pro
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libamdocl12cl32.so
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libamdocl32.so
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libOpenCL.so.1
-			dosym libOpenCL.so.1 /usr/lib32/OpenCL/vendors/amdgpu-pro/libOpenCL.so
+			dosym libOpenCL.so.1 /usr/lib/OpenCL/vendors/amdgpu-pro/libOpenCL.so
 		fi
 	fi
 
@@ -277,7 +317,7 @@ src_install() {
 		if use abi_x86_32 ; then
 			insinto /etc/vulkan/icd.d
 			doins "${T}/amd_icd32.json"
-			exeinto /usr/lib32/vulkan/vendors/amdgpu-pro
+			exeinto /usr/lib/vulkan/vendors/amdgpu-pro
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/amdvlk32.so
 		fi
 	fi
@@ -320,30 +360,30 @@ src_install() {
 		#dosym ../../opengl/amdgpu-pro/dri/amdgpu_dri.so /usr/$(get_libdir)/x86_64-linux-gnu/dri/amdgpu_dri.so  # Hack to get X to started!
 
 		if use abi_x86_32 ; then
-			exeinto /usr/lib32/opengl/amdgpu-pro/lib
+			exeinto /usr/lib/opengl/amdgpu-pro/lib
 			# doexe usr/lib/i386-linux-gnu/amdgpu-pro/libdrm_amdgpu.so.1.0.0
-			# dosym libdrm_amdgpu.so.1.0.0 /usr/lib32/opengl/amdgpu-pro/lib/libdrm_amdgpu.so.1
-			# dosym libdrm_amdgpu.so.1.0.0 /usr/lib32/opengl/amdgpu-pro/lib/libdrm_amdgpu.so
+			# dosym libdrm_amdgpu.so.1.0.0 /usr/lib/opengl/amdgpu-pro/lib/libdrm_amdgpu.so.1
+			# dosym libdrm_amdgpu.so.1.0.0 /usr/lib/opengl/amdgpu-pro/lib/libdrm_amdgpu.so
 
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libGL.so.1.2
-			dosym libGL.so.1.2 /usr/lib32/opengl/amdgpu-pro/lib/libGL.so.1
-			dosym libGL.so.1.2 /usr/lib32/opengl/amdgpu-pro/lib/libGL.so
+			dosym libGL.so.1.2 /usr/lib/opengl/amdgpu-pro/lib/libGL.so.1
+			dosym libGL.so.1.2 /usr/lib/opengl/amdgpu-pro/lib/libGL.so
 
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libgbm.so.1.0.0
-			dosym libgbm.so.1.0.0 /usr/lib32/opengl/amdgpu-pro/lib/libgbm.so.1
-			dosym libgbm.so.1.0.0 /usr/lib32/opengl/amdgpu-pro/lib/libgbm.so
+			dosym libgbm.so.1.0.0 /usr/lib/opengl/amdgpu-pro/lib/libgbm.so.1
+			dosym libgbm.so.1.0.0 /usr/lib/opengl/amdgpu-pro/lib/libgbm.so
 
-			exeinto /usr/lib32/opengl/amdgpu-pro/gbm
+			exeinto /usr/lib/opengl/amdgpu-pro/gbm
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/gbm/gbm_amdgpu.so
-			dosym gbm_amdgpu.so /usr/lib32/opengl/amdgpu-pro/gbm/libdummy.so
-			dosym opengl/amdgpu-pro/gbm /usr/lib32/gbm
+			dosym gbm_amdgpu.so /usr/lib/opengl/amdgpu-pro/gbm/libdummy.so
+			dosym opengl/amdgpu-pro/gbm /usr/lib/gbm
 
-			exeinto /usr/lib32/opengl/amdgpu-pro/dri
+			exeinto /usr/lib/opengl/amdgpu-pro/dri
 			doexe usr/lib/i386-linux-gnu/dri/amdgpu_dri.so
-			dosym ../opengl/amdgpu-pro/dri/amdgpu_dri.so /usr/lib32/dri/amdgpu_dri.so
+			dosym ../opengl/amdgpu-pro/dri/amdgpu_dri.so /usr/lib/dri/amdgpu_dri.so
 			# Hack for libGL.so hardcoded directory path for amdgpu_dri.so
 			#TODO: Do we still need this next line?
-			#dosym ../../../lib32/opengl/amdgpu-pro/dri/amdgpu_dri.so /usr/$(get_libdir)/i386-linux-gnu/dri/amdgpu_dri.so  # Hack to get X to started!
+			#dosym ../../../lib/opengl/amdgpu-pro/dri/amdgpu_dri.so /usr/$(get_libdir)/i386-linux-gnu/dri/amdgpu_dri.so  # Hack to get X to started!
 		fi
 	fi
 
@@ -354,9 +394,9 @@ src_install() {
 		dosym libGLESv2.so.2 /usr/$(get_libdir)/opengl/amdgpu-pro/lib/libGLESv2.so
 
 		if use abi_x86_32 ; then
-			exeinto /usr/lib32/opengl/amdgpu-pro/lib
+			exeinto /usr/lib/opengl/amdgpu-pro/lib
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libGLESv2.so.2
-			dosym libGLESv2.so.2 /usr/lib32/opengl/amdgpu-pro/lib/libGLESv2.so
+			dosym libGLESv2.so.2 /usr/lib/opengl/amdgpu-pro/lib/libGLESv2.so
 		fi
 	fi
 
@@ -366,9 +406,9 @@ src_install() {
 	dosym libEGL.so.1 /usr/$(get_libdir)/opengl/amdgpu-pro/lib/libEGL.so
 
 	if use abi_x86_32 ; then
-		exeinto /usr/lib32/opengl/amdgpu-pro/lib
+		exeinto /usr/lib/opengl/amdgpu-pro/lib
 		doexe opt/amdgpu-pro/lib/i386-linux-gnu/libEGL.so.1
-		dosym libEGL.so.1 /usr/lib32/opengl/amdgpu-pro/lib/libEGL.so
+		dosym libEGL.so.1 /usr/lib/opengl/amdgpu-pro/lib/libEGL.so
 	fi
 
 	# Copy the VDPAU libs
@@ -385,16 +425,16 @@ src_install() {
 		dosym ../opengl/amdgpu-pro/dri/radeonsi_drv_video.so /usr/$(get_libdir)/dri/radeonsi_drv_video.so
 
 		if use abi_x86_32 ; then
-			exeinto /usr/lib32/opengl/amdgpu-pro/vdpau
+			exeinto /usr/lib/opengl/amdgpu-pro/vdpau
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/vdpau/libvdpau_amdgpu.so.1.0.0
-			dosym ../opengl/amdgpu-pro/vdpau/libvdpau_amdgpu.so.1.0.0 /usr/lib32/vdpau/libvdpau_amdgpu.so.1.0.0
-			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib32/vdpau/libvdpau_amdgpu.so.1.0
-			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib32/vdpau/libvdpau_amdgpu.so.1
-			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib32/vdpau/libvdpau_amdgpu.so
+			dosym ../opengl/amdgpu-pro/vdpau/libvdpau_amdgpu.so.1.0.0 /usr/lib/vdpau/libvdpau_amdgpu.so.1.0.0
+			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib/vdpau/libvdpau_amdgpu.so.1.0
+			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib/vdpau/libvdpau_amdgpu.so.1
+			dosym libvdpau_amdgpu.so.1.0.0 /usr/lib/vdpau/libvdpau_amdgpu.so
 
-			exeinto /usr/lib32/opengl/amdgpu-pro/dri
+			exeinto /usr/lib/opengl/amdgpu-pro/dri
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/dri/radeonsi_drv_video.so
-			dosym ../opengl/amdgpu-pro/dri/radeonsi_drv_video.so /usr/lib32/dri/radeonsi_drv_video.so
+			dosym ../opengl/amdgpu-pro/dri/radeonsi_drv_video.so /usr/lib/dri/radeonsi_drv_video.so
 		fi
 	fi
 
@@ -411,13 +451,13 @@ src_install() {
 		# dosym ../opengl/amdgpu-pro/libomxil-bellagio0/libomx_mesa.so /usr/$(get_libdir)/libomxil-bellagio0/libomx_mesa.so
 
 		if use abi_x86_32 ; then
-			exeinto /usr/lib32/opengl/amdgpu-pro/gstreamer-1.0
+			exeinto /usr/lib/opengl/amdgpu-pro/gstreamer-1.0
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/gstreamer-1.0/libgstomx.so
-			dosym ../opengl/amdgpu-pro/gstreamer-1.0/libgstomx.so /usr/lib32/gstreamer-1.0/libgstomx.so
+			dosym ../opengl/amdgpu-pro/gstreamer-1.0/libgstomx.so /usr/lib/gstreamer-1.0/libgstomx.so
 
-		# 	exeinto /usr/lib32/opengl/amdgpu-pro/libomxil-bellagio0
+		# 	exeinto /usr/lib/opengl/amdgpu-pro/libomxil-bellagio0
 		# 	doexe opt/amdgpu-pro/lib/i386-linux-gnu/libomxil-bellagio0/libomx_mesa.so
-		# 	dosym ../opengl/amdgpu-pro/libomxil-bellagio0/libomx_mesa.so /usr/lib32/libomxil-bellagio0/libomx_mesa.so
+		# 	dosym ../opengl/amdgpu-pro/libomxil-bellagio0/libomx_mesa.so /usr/lib/libomxil-bellagio0/libomx_mesa.so
 		fi
 	fi
 }

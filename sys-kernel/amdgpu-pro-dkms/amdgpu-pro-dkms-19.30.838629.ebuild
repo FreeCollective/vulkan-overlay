@@ -7,11 +7,11 @@ EAPI=5
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 inherit eutils linux-info multilib-build unpacker versionator
 
-DESCRIPTION="AMD GPU-Pro kernel module for AMD precompiled drivers for Radeon GCN (HD7700 Series) and newer chipsets"
-HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Driver-for-Linux-Release-Notes.aspx"
+DESCRIPTION="AMDGPU-PRO kernel module for AMD precompiled drivers"
+HOMEPAGE="https://www.amd.com/en/support/kb/release-notes/rn-amdgpu-unified-linux"
 BUILD_VER=$(replace_version_separator 2 '-')
-ARC_NAME="amdgpu-pro-${BUILD_VER}.tar.xz"
-SRC_URI="https://www2.ati.com/drivers/linux/ubuntu/${ARC_NAME}"
+ARC_NAME="amdgpu-pro-${BUILD_VER}-ubuntu-18.04.tar.xz"
+SRC_URI="https://drivers.amd.com/drivers/linux//${BUILD_VER}/${ARC_NAME}"
 
 RESTRICT="fetch strip"
 
@@ -22,7 +22,7 @@ KEYWORDS=""
 SLOT="${PVR}"
 
 RDEPEND="
-	>=sys-kernel/dkms-2.3
+	>=sys-kernel/dkms-2.7
 	>=sys-firmware/amdgpu-pro-ucode-${PV}
 "
 
@@ -50,20 +50,7 @@ src_prepare() {
 	unpack_deb "./amdgpu-pro-${BUILD_VER}/amdgpu-pro-dkms_${BUILD_VER}_all.deb"
 
 	pushd ./usr/src/amdgpu-pro-${BUILD_VER} > /dev/null
-		epatch "${FILESDIR}"/${BUILD_VER}/0001-Add-Gentoo-as-an-OS-option-otherwise-it-wont-build.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0002-Fix-paging-changes-between-kernel-versions.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0003-Move-max_tmds_clock-to-display_info.max_tmds_clock.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0004-Fix-kernel-module-installation-location-using-dkms.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0005-Change-acpi_get_table_with_size-acpi_get_table-for-k.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0006-Change-drm_fb_get_bpp_depth-drm_format_plane_cpp-for.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0007-Add-cast-to-size_t-in-min-call-for-kernel-v4.10.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0008-Change-second-parameter-passed-to-drm_vma_node_verif.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0009-Change-vmf-virtual_address-to-vmf-address-for-kernel.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0010-Add-format_name-parameter-to-drm_get_format_name-for.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0011-Change-drm_vblank_-on-off-to-drm_crtc_vblank_-on-off.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0012-Change-drm_atomic_state_free-drm_atomic_state_put-fo.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0013-Change-context-format-parameter-from-d-to-llu-in-seq.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0014-Change-fence-types-to-dma_fence-for-kernel-v4.10.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0001-Gentoo-build-support.patch
 	popd > /dev/null
 
 	mkdir -p ./inst/usr/src

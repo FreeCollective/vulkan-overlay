@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -6,11 +6,11 @@ EAPI=5
 
 inherit linux-info unpacker versionator
 
-DESCRIPTION="Microcode for AMD precompiled drivers for Radeon GCN (HD7700 Series) and newer chipsets"
-HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Driver-for-Linux-Release-Notes.aspx"
+DESCRIPTION="Microcode for AMDGPU-PRO proprietary drivers"
+HOMEPAGE="https://www.amd.com/en/support/kb/release-notes/rn-amdgpu-unified-linux"
 BUILD_VER=$(replace_version_separator 2 '-')
-ARC_NAME="amdgpu-pro-${BUILD_VER}.tar.xz"
-SRC_URI="https://www2.ati.com/drivers/linux/ubuntu/${ARC_NAME}"
+ARC_NAME="amdgpu-pro-${BUILD_VER}-ubuntu-18.04.tar.xz"
+SRC_URI="https://drivers.amd.com/drivers/linux//${BUILD_VER}/${ARC_NAME}"
 
 RESTRICT="fetch strip"
 

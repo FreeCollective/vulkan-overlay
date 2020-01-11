@@ -1,0 +1,28 @@
+diff --git a/Makefile b/Makefile
+index 7a5f320..a11f21f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -60,6 +60,9 @@ else ifeq ("amzn",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_AMZ
+ else ifeq ("debian",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_DEBIAN
++else ifeq ("gentoo",$(OS_NAME))
++subdir-ccflags-y += -DOS_NAME_GENTOO
++OS_VERSION = "0.0"
+ else
+ subdir-ccflags-y += -DOS_NAME_UNKNOWN
+ endif
+diff --git a/amd/dkms/Makefile b/amd/dkms/Makefile
+index 7a5f320..a11f21f 100644
+--- a/amd/dkms/Makefile
++++ b/amd/dkms/Makefile
+@@ -60,6 +60,9 @@ else ifeq ("amzn",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_AMZ
+ else ifeq ("debian",$(OS_NAME))
+ subdir-ccflags-y += -DOS_NAME_DEBIAN
++else ifeq ("gentoo",$(OS_NAME))
++subdir-ccflags-y += -DOS_NAME_GENTOO
++OS_VERSION = "0.0"
+ else
+ subdir-ccflags-y += -DOS_NAME_UNKNOWN
+ endif

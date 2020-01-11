@@ -18,7 +18,7 @@ Find a place to put the overlay and clone it, but name it *vulkan*, this is the 
 named it this on Github just so it didn't get confused with anything else.
 
 ```bash
-git clone git@github.com:Lucretia/vulkan-overlay.git vulkan
+git clone git@github.com:FreeCollective/vulkan-overlay.git vulkan
 ```
 
 ## The source
@@ -82,14 +82,6 @@ a start, but it needs a lot more work. See below.
 
 On this ebuild, there is a new USE flag *vkheaders*, use this if you have no header conflicts with other packages.
 
-### media-libs/mesa
-
-This is a custom Mesa based on upstream/master and includes Dave Airlie's RADV driver for testing. This also installs
-Vulkan headers.
-
-** This cannot be installed at the same time as AMDGPU-Pro due to AMD's libdrm being too old. You will need the
-libdrm-9999 package in this repository.
-
 ### app-misc/vulkan-docs
 
 Installs the developer man pages and the API specification (in PDF form).
@@ -99,14 +91,6 @@ N.B: I really wasn't sure which category this should go into.
 ### dev-util/spirv-tools
 
 The SPIR-V assembler, disassembler and validator tools from Khronos.
-
-### dev-util/glslang
-
-glslang -> SPIR-V compiler and spirv-remap tool from Khronos.
-
-### dev-util/shaderc
-
-Google's GLSL -> SPIR-V compiler.
 
 ### dev-util/spirv-cross
 
@@ -138,7 +122,7 @@ This what I really want to happen:
 
 ## Results
 
-The most stable combination I've managed to find so far was 4.6.0-rc7 using amdgpu-pro-dkms-16.20.3.294842.
+The most stable combination I've managed to find so far was 4.6.0-rc7 using amdgpu-pro-dkms-16.20.3.294842**(DEPRECATED)**.
 
 From the [16.20.3-294842](docs/results_16.20.3-294842.md) drivers.
 
@@ -167,5 +151,6 @@ Dota 2 does run in Vulkan mode.
 ## Contributions
 
 Luke A. Guest
+Illia D. 
 
 Add your name here

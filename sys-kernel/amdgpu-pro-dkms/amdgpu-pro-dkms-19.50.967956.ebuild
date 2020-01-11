@@ -5,29 +5,32 @@
 EAPI=5
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-inherit eutils linux-info multilib-build unpacker
+inherit eutils linux-info multilib-build unpacker versionator
 
-DESCRIPTION="AMD GPU-Pro kernel module for Radeon Evergreen (HD5000 Series) and newer chipsets"
-HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Beta-Driver-for-Vulkan-Release-Notes.aspx"
-BUILD_VER=16.20.3-294842
-SRC_URI="https://www2.ati.com/drivers/beta/amdgpu-pro_${BUILD_VER}.tar.xz"
+DESCRIPTION="AMDGPU-PRO kernel module for AMD precompiled drivers"
+HOMEPAGE="https://www.amd.com/en/support/kb/release-notes/rn-amdgpu-unified-linux"
+BUILD_VER=$(replace_version_separator 2 '-')
+ARC_NAME="amdgpu-pro-${BUILD_VER}-ubuntu-18.04.tar.xz"
+SRC_URI="https://drivers.amd.com/drivers/linux//${BUILD_VER}/${ARC_NAME}"
 
 RESTRICT="fetch strip"
 
 # We cannot use dkms from within ebuild as it tries to modify the live filesystem.
 LICENSE="AMD GPL-2 QPL-1.0"
 KEYWORDS=""
-SLOT="1"
+#SLOT="1"
+SLOT="${PVR}"
 
 RDEPEND="
-	sys-kernel/dkms
+	>=sys-kernel/dkms-2.7
+	>=sys-firmware/amdgpu-pro-ucode-${PV}
 "
 
 S="${WORKDIR}"
 
 pkg_nofetch() {
 	einfo "Please download"
-	einfo "  - ${PN}_${PV}.tar.xz"
+	einfo "  - ${ARC_NAME}"
 	einfo "from ${HOMEPAGE} and place them in ${DISTDIR}"
 }
 
@@ -44,19 +47,15 @@ unpack_deb() {
 src_prepare() {
 	linux-info_pkg_setup
 
-	unpack_deb "./amdgpu-pro-driver/amdgpu-pro-dkms_${BUILD_VER}_all.deb"
+	unpack_deb "./amdgpu-pro-${BUILD_VER}/amdgpu-pro-dkms_${BUILD_VER}_all.deb"
 
 	pushd ./usr/src/amdgpu-pro-${BUILD_VER} > /dev/null
-		epatch "${FILESDIR}"/${BUILD_VER}/0001-Make-the-script-find-the-correct-system-map-file.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0002-Add-in-Gentoo-as-an-option-for-the-OS-otherwise-it-w.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0003-Fixed-API-changes-in-the-kernel.-Should-still-compil.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0004-GCC-won-t-compile-any-static-inline-function-with-va.patch
-		epatch "${FILESDIR}"/${BUILD_VER}/0005-Fix-placement-of-module.patch
+		epatch "${FILESDIR}"/${BUILD_VER}/0001-Gentoo-build-support.patch
 	popd > /dev/null
 
 	mkdir -p ./inst/usr/src
 	cp -R ./usr/src/amdgpu-pro-${BUILD_VER} ./inst/usr/src
-	rm -rf ./{amdgpu-pro-driver,etc,lib,usr}
+	#rm -rf ./{amdgpu-pro-driver,etc,lib,usr}
 }
 
 src_install() {
@@ -66,15 +65,15 @@ src_install() {
 pkg_postinst() {
 	einfo "To install the kernel module, you need to do the following:"
 	einfo ""
-	einfo "  dkms add -m amdgpu-pro -v ${BUILD_VER}"
-	einfo "  dkms build -m amdgpu-pro -v ${BUILD_VER}"
-	einfo "  dkms install -m amdgpu-pro -v ${BUILD_VER}"
+	# einfo "  dkms add -m amdgpu-pro -v ${BUILD_VER}"
+	# einfo "  dkms build -m amdgpu-pro -v ${BUILD_VER}"
+	einfo "  dkms install -m amdgpu-pro -v ${BUILD_VER} -k ${KV_FULL}"
 }
 
 pkg_postrm() {
 	einfo "If you have built and installed the kernel module, to remove it, you need to do the following:"
 	einfo ""
-	einfo "  dkms remove -m amdgpu -v ${BUILD_VER} -k ${KV_FULL}"
+	einfo "  dkms remove -m amdgpu-pro -v ${BUILD_VER} -k ${KV_FULL}"
 	einfo ""
 	einfo "If you haven't, just:"
 	einfo "  rm -rf /var/lib/dkms/amdgpu-pro"

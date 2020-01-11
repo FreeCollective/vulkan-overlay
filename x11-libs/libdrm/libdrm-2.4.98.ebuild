@@ -9,16 +9,14 @@ EAPI=5
 inherit multilib-build unpacker
 
 DESCRIPTION="X.Org libdrm library (amdgpu-pro binary)"
-#HOMEPAGE="https://dri.freedesktop.org/"
-#DESCRIPTION="AMD precompiled drivers for Radeon Evergreen (HD5000 Series) and newer chipsets"
 HOMEPAGE="http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Driver-for-Linux-Release-Notes.aspx"
-PKG_VER=16.60
-PKG_REV=379184
+PKG_VER=19.30
+PKG_REV=838629
 PKG_VER_STRING=${PKG_VER}-${PKG_REV}
-LIBDRM_VER=2.4.70
+LIBDRM_VER=2.4.98
 LIBDRM_FULL_VER=${LIBDRM_VER}-${PKG_REV}
-ARC_NAME="amdgpu-pro-${PKG_VER_STRING}.tar.xz"
-SRC_URI="https://www2.ati.com/drivers/linux/ubuntu/${ARC_NAME}"
+ARC_NAME="amdgpu-pro-${PKG_VER_STRING}-ubuntu-18.04.tar.xz"
+SRC_URI="https://drivers.amd.com/drivers/linux//${PKG_VER}/${ARC_NAME}"
 
 # TODO: Is this correct? What about mixed systems?
 VIDEO_CARDS="amdgpu exynos freedreno intel nouveau omap radeon tegra vc4 vmware"
@@ -74,7 +72,7 @@ src_unpack() {
 
 src_prepare() {
 	# if [[ ${PV} = 9999* ]]; then
-	# 	# tests are restricted, no point in building them
+	# tests are restricted, no point in building them
 	# 	sed -ie 's/tests //' "${S}"/Makefile.am
 	# fi
 	# xorg-2_src_prepare
@@ -140,11 +138,11 @@ EOF
 fi
 
 if use abi_x86_32 ; then
-	# Create /usr/lib632/pkgconfig/* files
+	# Create /usr/lib/pkgconfig/* files
 	cat << EOF > "${T}/libdrm_amdgpu.pc.32" || die
 prefix=/usr
 exec_prefix=\${prefix}
-libdir=/usr/lib32
+libdir=/usr/lib
 includedir=\${prefix}/include
 
 Name: libdrm_amdgpu
@@ -158,7 +156,7 @@ EOF
 	cat << EOF > "${T}/libdrm_radeon.pc.32" || die
 prefix=/usr
 exec_prefix=\${prefix}
-libdir=/usr/lib32
+libdir=/usr/lib
 includedir=\${prefix}/include
 
 Name: libdrm_amdgpu
@@ -172,7 +170,7 @@ EOF
 	cat << EOF > "${T}/libdrm.pc.32" || die
 prefix=/usr
 exec_prefix=\${prefix}
-libdir=/usr/lib32
+libdir=/usr/lib
 includedir=\${prefix}/include
 
 Name: libdrm
@@ -186,7 +184,7 @@ EOF
 		cat << EOF > "${T}/libkms.pc.32" || die
 prefix=/usr
 exec_prefix=\${prefix}
-libdir=/usr/lib32
+libdir=/usr/lib
 includedir=\${prefix}/include
 
 Name: libkms
@@ -216,7 +214,7 @@ src_install() {
 	fi
 
 	if use abi_x86_32 ; then
-		insinto /usr/lib32/pkgconfig
+		insinto /usr/lib/pkgconfig
 		newins "${T}/libdrm_amdgpu.pc.32" "libdrm_amdgpu.pc"
 		newins "${T}/libdrm_radeon.pc.32" "libdrm_radeon.pc"
 		newins "${T}/libdrm.pc.32" "libdrm.pc"
@@ -258,23 +256,23 @@ src_install() {
 	fi
 
 	if use abi_x86_32 ; then
-		exeinto /usr/lib32
+		exeinto /usr/lib
 		doexe opt/amdgpu-pro/lib/i386-linux-gnu/libdrm_amdgpu.so.1.0.0
-		dosym libdrm_amdgpu.so.1.0.0 /usr/lib32/libdrm_amdgpu.so.1
-		dosym libdrm_amdgpu.so.1.0.0 /usr/lib32/libdrm_amdgpu.so
+		dosym libdrm_amdgpu.so.1.0.0 /usr/lib/libdrm_amdgpu.so.1
+		dosym libdrm_amdgpu.so.1.0.0 /usr/lib/libdrm_amdgpu.so
 
 		doexe opt/amdgpu-pro/lib/i386-linux-gnu/libdrm_radeon.so.1.0.1
-		dosym libdrm_radeon.so.1.0.1 /usr/lib32/libdrm_radeon.so.1
-		dosym libdrm_radeon.so.1.0.1 /usr/lib32/libdrm_radeon.so
+		dosym libdrm_radeon.so.1.0.1 /usr/lib/libdrm_radeon.so.1
+		dosym libdrm_radeon.so.1.0.1 /usr/lib/libdrm_radeon.so
 
 		doexe opt/amdgpu-pro/lib/i386-linux-gnu/libdrm.so.2.4.0
-		dosym libdrm.so.2.4.0 /usr/lib32/libdrm.so.2
-		dosym libdrm.so.2.4.0 /usr/lib32/libdrm.so
+		dosym libdrm.so.2.4.0 /usr/lib/libdrm.so.2
+		dosym libdrm.so.2.4.0 /usr/lib/libdrm.so
 
 		if use libkms ; then
 			doexe opt/amdgpu-pro/lib/i386-linux-gnu/libkms.so.1.0.0
-			dosym libkms.so.1.0.0 /usr/lib32/libkms.so.1
-			dosym libkms.so.1.0.0 /usr/lib32/libkms.so
+			dosym libkms.so.1.0.0 /usr/lib/libkms.so.1
+			dosym libkms.so.1.0.0 /usr/lib/libkms.so
 		fi
 	fi
 }
@@ -282,22 +280,22 @@ src_install() {
 src_configure() {
 	einfo "no configure step"
 	# XORG_CONFIGURE_OPTIONS=(
-	# 	# Udev is only used by tests now.
-	# 	--disable-udev
-	# 	--disable-cairo-tests
-	# 	$(use_enable video_cards_amdgpu amdgpu)
-	# 	$(use_enable video_cards_exynos exynos-experimental-api)
-	# 	$(use_enable video_cards_freedreno freedreno)
-	# 	$(use_enable video_cards_intel intel)
-	# 	$(use_enable video_cards_nouveau nouveau)
-	# 	$(use_enable video_cards_omap omap-experimental-api)
-	# 	$(use_enable video_cards_radeon radeon)
-	# 	$(use_enable video_cards_tegra tegra-experimental-api)
-	# 	$(use_enable video_cards_vc4 vc4)
-	# 	$(use_enable video_cards_vmware vmwgfx)
-	# 	$(use_enable libkms)
-	# 	# valgrind installs its .pc file to the pkgconfig for the primary arch
-	# 	--enable-valgrind=$(usex valgrind auto no)
+	#	# Udev is only used by tests now.
+	#	--disable-udev
+	#	--disable-cairo-tests
+	#	$(use_enable video_cards_amdgpu amdgpu)
+	#	$(use_enable video_cards_exynos exynos-experimental-api)
+	#	$(use_enable video_cards_freedreno freedreno)
+	#	$(use_enable video_cards_intel intel)
+	#	$(use_enable video_cards_nouveau nouveau)
+	#	$(use_enable video_cards_omap omap-experimental-api)
+	#	$(use_enable video_cards_radeon radeon)
+	#	$(use_enable video_cards_tegra tegra-experimental-api)
+	#	$(use_enable video_cards_vc4 vc4)
+	#	$(use_enable video_cards_vmware vmwgfx)
+	#	$(use_enable libkms)
+	#	# valgrind installs its .pc file to the pkgconfig for the primary arch
+	#	--enable-valgrind=$(usex valgrind auto no)
 	# )
 
 	# xorg-2_src_configure
